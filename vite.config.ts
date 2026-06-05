@@ -4,7 +4,12 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
+  // If running in GitHub Actions, use the repository name as the base path
+  // so that project pages (username.github.io/repo-name) work automatically.
+  const repoName = process.env.GITHUB_REPOSITORY ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/` : '/';
+
   return {
+    base: repoName,
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
