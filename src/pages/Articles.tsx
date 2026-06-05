@@ -4,6 +4,7 @@ import { useData } from '../context/DataContext';
 import RichTextEditor from '../components/RichTextEditor';
 import ImagePickerDialog from '../components/ImagePickerDialog';
 import ReadingProgress from '../components/ReadingProgress';
+import ArticleDownloadMenu from '../components/ArticleDownloadMenu';
 
 export default function Articles() {
   const { user } = useAuth();
@@ -131,12 +132,15 @@ export default function Articles() {
                       </>
                     )}
                   </div>
-                  {user?.role === 'admin' && (
-                     <div className="flex gap-3">
-                       <button onClick={(e) => { e.stopPropagation(); handleEdit(article); }} className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-heraldry-blue transition-colors font-bold">Rediger</button>
-                       <button onClick={(e) => { e.stopPropagation(); if(confirm('Er du sikker på at du vil slette denne artikkelen?')) deleteArticle(article.id); }} className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 transition-colors font-bold">Slett</button>
-                     </div>
-                  )}
+                  <div className="flex gap-3 relative z-10">
+                    <ArticleDownloadMenu title={article.title} content={article.content} />
+                    {user?.role === 'admin' && (
+                       <>
+                         <button onClick={(e) => { e.stopPropagation(); handleEdit(article); }} className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-heraldry-blue transition-colors font-bold">Rediger</button>
+                         <button onClick={(e) => { e.stopPropagation(); if(confirm('Er du sikker på at du vil slette denne artikkelen?')) deleteArticle(article.id); }} className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 transition-colors font-bold">Slett</button>
+                       </>
+                    )}
+                  </div>
                 </div>
                 <h2 className="text-3xl md:text-5xl font-serif text-heraldry-blue mb-8 leading-tight">{article.title}</h2>
                 <div className="prose prose-slate prose-lg max-w-none opacity-80 leading-relaxed font-sans" dangerouslySetInnerHTML={{ __html: article.content }}></div>
