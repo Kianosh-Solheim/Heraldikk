@@ -1,0 +1,8 @@
+{
+  "name": "Norsk Heraldisk Forening",
+  "description": "Hjemmeside for Norsk Heraldisk Forening, en organisasjon dedikert til heraldisk kunst og vitenskap.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

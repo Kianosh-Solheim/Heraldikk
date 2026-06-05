@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  
+  --color-heraldry-red: #4A0E0E; /* Dark brown/red */
+  --color-heraldry-red-dark: #2A0808;
+  --color-heraldry-gold: #D4AF37; /* Metallic gold */
+  --color-heraldry-blue: #1A1A1A; /* Almost black */
+  --color-heraldry-bg: #FDFCF0; /* Warm paper tone */
+  --color-heraldry-surface: #F5F2E8; /* Slightly darker surface */
+}
+
+body {
+  background-color: var(--color-heraldry-bg);
+  color: #1A1A1A;
+}
+
+@utility perspective-1000 {
+  perspective: 1000px;
+}
+
+@utility transform-style-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+@utility backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@utility rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@media print {
+  /* Hide non-printable elements */
+  nav, footer, .no-print, [role="navigation"] {
+    display: none !important;
+  }
+
+  /* Reading Progress shouldn't print */
+  .fixed.top-0 {
+    display: none !important;
+  }
+
+  /* Reset layout for printing */
+  body, html {
+    background-color: transparent !important;
+    font-size: 11pt;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Main content printing constraints */
+  .prose {
+    max-width: 100% !important;
+  }
+  
+  /* Avoid breaking inside important blocks */
+  img, figure, table, pre, blockquote, .break-inside-avoid {
+    page-break-inside: avoid;
+    break-inside: avoid-page;
+  }
+
+  /* Form and buttons */
+  button, form, input, textarea {
+    display: none !important;
+  }
+
+  /* Standard heraldry margins for physical page */
+  @page {
+    margin: 2cm 2.5cm;
+    size: auto;
+  }
+  
+  /* Enhance readability with serif on print */
+  h1, h2, h3, h4, h5 {
+    page-break-after: avoid;
+    break-after: avoid-page;
+  }
+  
+  /* Ensure colors print cleanly as Heraldric Brand */
+  * {
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+

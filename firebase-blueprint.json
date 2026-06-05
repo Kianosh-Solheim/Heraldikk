@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A registered user in the system.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "User's full name" },
+        "email": { "type": "string", "description": "User's email address" },
+        "role": { "type": "string", "enum": ["member", "admin"], "description": "User's role" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["name", "email", "role", "createdAt"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "An article or news post.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "date": { "type": "string" },
+        "author": { "type": "string" },
+        "authorId": { "type": "string" },
+        "isPinned": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["title", "excerpt", "content", "date", "author", "authorId", "isPinned", "createdAt"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "An upcoming event.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "location": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["title", "date", "location", "description", "createdAt"]
+    },
+    "HeraldicArm": {
+      "title": "HeraldicArm",
+      "description": "A heraldic arm submitted by a member.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "owner": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "description", "owner", "ownerId", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "articles/{articleId}": {
+      "schema": { "$ref": "#/entities/Article" },
+      "description": "Stores public articles."
+    },
+    "events/{eventId}": {
+      "schema": { "$ref": "#/entities/Event" },
+      "description": "Stores upcoming events."
+    },
+    "arms/{armId}": {
+      "schema": { "$ref": "#/entities/HeraldicArm" },
+      "description": "Stores heraldic arms submitted by users."
+    }
+  }
+}
