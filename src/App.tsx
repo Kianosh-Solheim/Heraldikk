@@ -18,7 +18,9 @@ import Vaapenrulle from './pages/Vaapenrulle';
 import Events from './pages/Events';
 import EventDetail from './pages/EventDetail';
 import Articles from './pages/Articles';
+import ArticleDetail from './pages/ArticleDetail';
 import Login from './pages/Login';
+import AdminDashboard from './pages/AdminDashboard';
 
 function Layout() {
   return (
@@ -47,7 +49,9 @@ export default function App() {
               <Route path="arrangementer" element={<Events />} />
               <Route path="arrangementer/:eventId" element={<EventDetail />} />
               <Route path="artikler" element={<Articles />} />
+              <Route path="artikler/:articleId" element={<ArticleDetail />} />
               <Route path="login" element={<Login />} />
+              <Route path="admin" element={<AdminDashboard />} />
             </Route>
           </Routes>
         </BrowserRouter>

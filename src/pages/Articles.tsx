@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import RichTextEditor from '../components/RichTextEditor';
 import ImagePickerDialog from '../components/ImagePickerDialog';
 import ReadingProgress from '../components/ReadingProgress';
 import ArticleDownloadMenu from '../components/ArticleDownloadMenu';
+
+import { generateSlug } from '../utils/slugify';
 
 export default function Articles() {
   const { user } = useAuth();
@@ -113,55 +116,50 @@ export default function Articles() {
           </form>
         )}
 
-        <div className="grid gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {articles.map((article) => (
-            <div key={article.id} className="bg-white border border-heraldry-gold/20 shadow-sm cursor-pointer hover:shadow-md transition-shadow overflow-hidden">
-              {article.imageUrl && (
-                <div className="w-full bg-slate-50 border-b border-heraldry-gold/10 relative">
-                  <div className="w-full flex justify-center">
-                    <img src={article.imageUrl} alt={article.title} className="w-full h-auto max-h-[600px] object-contain" referrerPolicy="no-referrer" />
+            <div key={article.id} className="bg-white border border-heraldry-gold/20 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full overflow-hidden group">
+              <Link to={`/artikler/${generateSlug(article.title, article.id)}`} className="block relative h-48 sm:h-56 bg-slate-50 border-b border-heraldry-gold/10 overflow-hidden">
+                {article.imageUrl ? (
+                  <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-slate-100 text-heraldry-blue/20">
+                    <span className="font-serif italic text-2xl">NHF</span>
                   </div>
-                  {article.imageTitle && article.imageSourceUrl && (
-                    <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded shadow-sm opacity-60 hover:opacity-100 transition-opacity">
-                      Bilde:{' '}
-                      <a 
-                        href={article.imageSourceUrl} 
-                        target="_blank" 
-                        rel="noreferrer noopener"
-                        className="underline hover:text-heraldry-gold transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {article.imageTitle.replace(/^File:/, '').replace(/\.[^/.]+$/, '').replace(/_/g, ' ')} fra Wikimedia Commons
-                      </a>
+                )}
+                {article.isPinned && (
+                  <div className="absolute top-4 right-4 bg-heraldry-red text-white text-[10px] uppercase tracking-widest font-bold px-3 py-1 shadow-sm">
+                    Festa
+                  </div>
+                )}
+              </Link>
+
+              <div className="p-6 md:p-8 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-4 text-[10px] uppercase tracking-widest font-sans">
+                  <div className="flex gap-3 items-center opacity-60">
+                    <span>{article.date}</span>
+                    <span>•</span>
+                    <span className="truncate max-w-[100px]">{article.author}</span>
+                  </div>
+                </div>
+                
+                <Link to={`/artikler/${generateSlug(article.title, article.id)}`} className="block flex-1">
+                  <h2 className="text-2xl font-serif text-heraldry-blue mb-4 leading-tight group-hover:text-heraldry-red transition-colors">{article.title}</h2>
+                  <p className="text-sm opacity-70 leading-relaxed font-sans line-clamp-3 mb-6">{article.excerpt}</p>
+                </Link>
+
+                <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-100">
+                  <Link to={`/artikler/${generateSlug(article.title, article.id)}`} className="text-[10px] text-heraldry-red font-bold uppercase tracking-widest hover:text-heraldry-red-dark flex items-center gap-2">
+                    Les meir <span className="text-lg leading-none">&rarr;</span>
+                  </Link>
+                  
+                  {user?.role === 'admin' && (
+                    <div className="flex gap-2">
+                       <button onClick={() => handleEdit(article)} className="text-[10px] px-2 py-1 bg-slate-100 hover:bg-slate-200 text-heraldry-blue transition-colors font-bold uppercase tracking-widest">Rediger</button>
+                       <button onClick={() => { if(confirm('Er du sikker på at du vil slette denne artikkelen?')) deleteArticle(article.id); }} className="text-[10px] px-2 py-1 bg-red-50 hover:bg-red-100 text-red-600 transition-colors font-bold uppercase tracking-widest">Slett</button>
                     </div>
                   )}
                 </div>
-              )}
-              <div className="p-8 md:p-12">
-                <div className="flex justify-between items-start mb-6 text-[10px] uppercase tracking-widest font-sans">
-                  <div className="flex gap-4 items-center opacity-60">
-                    <span>{article.date}</span>
-                    <span>•</span>
-                    <span>{article.author}</span>
-                    {article.isPinned && (
-                      <>
-                        <span>•</span>
-                        <span className="text-heraldry-red font-bold">Festa</span>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex gap-3 relative z-10">
-                    <ArticleDownloadMenu title={article.title} content={article.content} imageUrl={article.imageUrl} />
-                    {user?.role === 'admin' && (
-                       <>
-                         <button onClick={(e) => { e.stopPropagation(); handleEdit(article); }} className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-heraldry-blue transition-colors font-bold">Rediger</button>
-                         <button onClick={(e) => { e.stopPropagation(); if(confirm('Er du sikker på at du vil slette denne artikkelen?')) deleteArticle(article.id); }} className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 transition-colors font-bold">Slett</button>
-                       </>
-                    )}
-                  </div>
-                </div>
-                <h2 className="text-3xl md:text-5xl font-serif text-heraldry-blue mb-8 leading-tight">{article.title}</h2>
-                <div className="prose prose-slate prose-lg max-w-none opacity-80 leading-relaxed font-sans" dangerouslySetInnerHTML={{ __html: article.content }}></div>
               </div>
             </div>
           ))}

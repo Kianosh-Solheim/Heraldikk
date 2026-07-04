@@ -3,6 +3,7 @@ import { Shield } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { generateSlug } from '../utils/slugify';
 
 export default function Home() {
   const { articles, events } = useData();
@@ -56,7 +57,7 @@ export default function Home() {
             <div className="space-y-6">
               <h4 className="text-[10px] uppercase tracking-widest text-heraldry-red font-bold">Festa artiklar</h4>
               {pinnedArticles.map((article) => (
-                <Link to={`/artikler`} key={article.id} className="block group cursor-pointer">
+                <Link to={`/artikler/${generateSlug(article.title, article.id)}`} key={article.id} className="block group cursor-pointer">
                    <h4 className="text-sm font-bold leading-snug group-hover:text-heraldry-red transition-colors">{article.title}</h4>
                    <p className="text-[11px] opacity-60 mt-1">{article.date}</p>
                 </Link>
@@ -69,7 +70,7 @@ export default function Home() {
             <div className="space-y-6 pt-6 border-t border-heraldry-gold/20">
               <h4 className="text-[10px] uppercase tracking-widest text-heraldry-red font-bold">Komande arrangement</h4>
               {upcomingEvents.map((event) => (
-                <Link to={`/arrangementer`} key={event.id} className="block group cursor-pointer">
+                <Link to={`/arrangementer/${event.id}`} key={event.id} className="block group cursor-pointer">
                   <h4 className="text-sm font-bold leading-snug group-hover:text-heraldry-red transition-colors">{event.title}</h4>
                   <p className="text-[11px] opacity-60 mt-1">{event.date} • {event.location}</p>
                 </Link>
