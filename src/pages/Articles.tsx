@@ -11,7 +11,7 @@ export default function Articles() {
   const { articles, addArticle, updateArticle, deleteArticle } = useData();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ title: '', excerpt: '', content: '', imageUrl: '', isPinned: false });
+  const [form, setForm] = useState({ title: '', excerpt: '', content: '', imageUrl: '', imageTitle: '', imageSourceUrl: '', isPinned: false });
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
 
   const handleEdit = (article: any) => {
@@ -20,6 +20,8 @@ export default function Articles() {
       excerpt: article.excerpt,
       content: article.content,
       imageUrl: article.imageUrl || '',
+      imageTitle: article.imageTitle || '',
+      imageSourceUrl: article.imageSourceUrl || '',
       isPinned: article.isPinned
     });
     setEditingId(article.id);
@@ -41,7 +43,7 @@ export default function Articles() {
           author: user?.name || 'Admin',
         });
       }
-      setForm({ title: '', excerpt: '', content: '', imageUrl: '', isPinned: false });
+      setForm({ title: '', excerpt: '', content: '', imageUrl: '', imageTitle: '', imageSourceUrl: '', isPinned: false });
       setEditingId(null);
       setShowForm(false);
     }
@@ -50,11 +52,11 @@ export default function Articles() {
   const handleCancel = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ title: '', excerpt: '', content: '', imageUrl: '', isPinned: false });
+    setForm({ title: '', excerpt: '', content: '', imageUrl: '', imageTitle: '', imageSourceUrl: '', isPinned: false });
   };
 
   return (
-    <div className="pt-24 min-h-screen bg-heraldry-bg relative">
+    <div className="pt-8 min-h-screen bg-heraldry-bg relative">
       <ReadingProgress />
       <div className="container mx-auto px-6 max-w-5xl py-12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
@@ -94,7 +96,7 @@ export default function Articles() {
                     Søk bilde
                   </button>
                 </div>
-                <ImagePickerDialog isOpen={isImagePickerOpen} onClose={() => setIsImagePickerOpen(false)} onSelect={(url) => { setForm({...form, imageUrl: url}); setIsImagePickerOpen(false); }} />
+                <ImagePickerDialog isOpen={isImagePickerOpen} onClose={() => setIsImagePickerOpen(false)} onSelect={(url, title, sourceUrl) => { setForm({...form, imageUrl: url, imageTitle: title || '', imageSourceUrl: sourceUrl || ''}); setIsImagePickerOpen(false); }} />
               </div>
               <div>
                 <label className="block text-[10px] uppercase tracking-widest opacity-60 mb-2">Innhald</label>
@@ -115,8 +117,24 @@ export default function Articles() {
           {articles.map((article) => (
             <div key={article.id} className="bg-white border border-heraldry-gold/20 shadow-sm cursor-pointer hover:shadow-md transition-shadow overflow-hidden">
               {article.imageUrl && (
-                <div className="w-full h-64 md:h-96">
-                  <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <div className="w-full bg-slate-50 border-b border-heraldry-gold/10 relative">
+                  <div className="w-full flex justify-center">
+                    <img src={article.imageUrl} alt={article.title} className="w-full h-auto max-h-[600px] object-contain" referrerPolicy="no-referrer" />
+                  </div>
+                  {article.imageTitle && article.imageSourceUrl && (
+                    <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded shadow-sm opacity-60 hover:opacity-100 transition-opacity">
+                      Bilde:{' '}
+                      <a 
+                        href={article.imageSourceUrl} 
+                        target="_blank" 
+                        rel="noreferrer noopener"
+                        className="underline hover:text-heraldry-gold transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {article.imageTitle.replace(/^File:/, '').replace(/\.[^/.]+$/, '').replace(/_/g, ' ')} fra Wikimedia Commons
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
               <div className="p-8 md:p-12">
@@ -133,7 +151,7 @@ export default function Articles() {
                     )}
                   </div>
                   <div className="flex gap-3 relative z-10">
-                    <ArticleDownloadMenu title={article.title} content={article.content} />
+                    <ArticleDownloadMenu title={article.title} content={article.content} imageUrl={article.imageUrl} />
                     {user?.role === 'admin' && (
                        <>
                          <button onClick={(e) => { e.stopPropagation(); handleEdit(article); }} className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-heraldry-blue transition-colors font-bold">Rediger</button>

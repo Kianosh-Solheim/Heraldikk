@@ -32,7 +32,7 @@ export default function EventDetail() {
   }, [events, eventId]);
 
   if (!event) {
-    return <div className="pt-24 min-h-screen bg-heraldry-bg text-center py-24">Laster arrangement...</div>;
+    return <div className="pt-8 min-h-screen bg-heraldry-bg text-center py-24">Laster arrangement...</div>;
   }
 
   const isAdmin = user?.role === 'admin';
@@ -60,7 +60,7 @@ export default function EventDetail() {
   };
 
   return (
-    <div className="pt-24 min-h-screen bg-heraldry-bg">
+    <div className="pt-8 min-h-screen bg-heraldry-bg">
       <div className="container mx-auto px-6 max-w-4xl py-12">
         <button 
           onClick={() => navigate('/arrangementer')} 

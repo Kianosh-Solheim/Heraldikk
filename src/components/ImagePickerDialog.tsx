@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, Upload, Image as ImageIcon } from 'lucide-react';
 
 interface ImagePickerDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (url: string) => void;
+  onSelect: (url: string, title?: string, sourceUrl?: string) => void;
 }
 
 export default function ImagePickerDialog({ isOpen, onClose, onSelect }: ImagePickerDialogProps) {
@@ -13,14 +13,28 @@ export default function ImagePickerDialog({ isOpen, onClose, onSelect }: ImagePi
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  
+  const observer = useRef<IntersectionObserver | null>(null);
 
-  const handleSearch = async (e?: React.FormEvent) => {
+  const handleSearch = async (e?: React.FormEvent, loadMore = false) => {
     if (e) e.preventDefault();
     if (!searchQuery.trim()) return;
+    if (loadMore && isLoadingMore) return;
 
-    setIsLoading(true);
+    if (!loadMore) {
+      setIsLoading(true);
+      setOffset(0);
+    } else {
+      setIsLoadingMore(true);
+    }
+
+    const currentOffset = loadMore ? offset : 0;
+
     try {
-      const response = await fetch(`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(searchQuery)}&gsrlimit=30&prop=imageinfo&iiprop=url|size&iiurlwidth=500&format=json&origin=*`);
+      const response = await fetch(`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(searchQuery)}&gsrlimit=30&gsroffset=${currentOffset}&prop=imageinfo&iiprop=url|size&iiurlwidth=500&format=json&origin=*`);
       const data = await response.json();
       
       if (data.query && data.query.pages) {
@@ -32,16 +46,39 @@ export default function ImagePickerDialog({ isOpen, onClose, onSelect }: ImagePi
             thumbUrl: page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url
           }))
           .filter(img => img.url);
-        setSearchResults(results);
+        
+        setSearchResults(prev => loadMore ? [...prev, ...results] : results);
+        
+        if (data.continue && data.continue.gsroffset) {
+          setOffset(data.continue.gsroffset);
+          setHasMore(true);
+        } else {
+          setHasMore(false);
+        }
       } else {
-        setSearchResults([]);
+        if (!loadMore) setSearchResults([]);
+        setHasMore(false);
       }
     } catch (error) {
       console.error("Error fetching images:", error);
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
     }
   };
+
+  const lastImageElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (isLoading || isLoadingMore) return;
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        handleSearch(undefined, true);
+      }
+    });
+
+    if (node) observer.current.observe(node);
+  }, [isLoading, isLoadingMore, hasMore, offset, searchQuery]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -118,19 +155,44 @@ export default function ImagePickerDialog({ isOpen, onClose, onSelect }: ImagePi
                   </div>
                 </div>
               ) : searchResults.length > 0 ? (
-                <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 pb-12">
-                  {searchResults.map((img) => (
-                    <div 
-                      key={img.id} 
-                      className="break-inside-avoid bg-slate-100 rounded overflow-hidden cursor-pointer border-2 border-transparent hover:border-heraldry-blue transition-all group relative"
-                      onClick={() => onSelect(img.url)}
-                    >
-                      <img src={img.thumbUrl} alt={img.title} className="w-full h-auto object-cover" loading="lazy" referrerPolicy="no-referrer" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3 pointer-events-none">
-                        <span className="text-white text-xs truncate w-full">{img.title.replace('File:', '')}</span>
+                <div className="pb-8">
+                  <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+                    {searchResults.map((img, index) => {
+                      const isLastElement = index === searchResults.length - 1;
+                      return (
+                        <div 
+                          key={`${img.id}-${Math.random()}`} // the api can return same ids when paginating sometimes in rare scenarios
+                          ref={isLastElement ? lastImageElementRef : null}
+                          className="break-inside-avoid bg-slate-100 rounded overflow-hidden cursor-pointer border-2 border-transparent hover:border-heraldry-blue transition-all group relative"
+                          onClick={() => onSelect(img.url, img.title, `https://commons.wikimedia.org/wiki/${encodeURIComponent(img.title)}`)}
+                        >
+                          <img src={img.thumbUrl} alt={img.title} className="w-full h-auto object-cover" loading="lazy" referrerPolicy="no-referrer" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3 pointer-events-none">
+                            <span className="text-white text-xs truncate w-full">{img.title.replace('File:', '')}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {isLoadingMore && (
+                    <div className="mt-8 flex justify-center py-4">
+                      <div className="text-slate-400 flex flex-col items-center gap-2">
+                        <Search className="animate-pulse" size={24} />
+                        <span className="text-[10px] uppercase tracking-widest font-bold">Laster flere...</span>
                       </div>
                     </div>
-                  ))}
+                  )}
+                  {hasMore && !isLoadingMore && (
+                    <div className="mt-8 flex justify-center py-4">
+                      <button 
+                        type="button" 
+                        onClick={() => handleSearch(undefined, true)}
+                        className="px-6 py-3 bg-white border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-sm cursor-pointer"
+                      >
+                        Last inn flere
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col justify-center items-center py-12">

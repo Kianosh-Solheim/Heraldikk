@@ -16,7 +16,7 @@ export default function Login() {
   };
 
   return (
-    <div className="pt-24 min-h-screen bg-heraldry-bg flex flex-col items-center justify-center p-6">
+    <div className="pt-8 min-h-screen bg-heraldry-bg flex flex-col items-center justify-center p-6">
       <div className="bg-white p-12 w-full max-w-md border border-heraldry-gold/30 shadow-2xl text-center">
         <h1 className="text-3xl font-serif text-heraldry-blue mb-2 italic">Min Side</h1>
         

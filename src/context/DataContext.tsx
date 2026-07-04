@@ -13,6 +13,8 @@ export interface Article {
   authorId?: string;
   isPinned: boolean;
   imageUrl?: string;
+  imageTitle?: string;
+  imageSourceUrl?: string;
 }
 
 export interface Event {

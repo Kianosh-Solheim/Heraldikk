@@ -1,95 +1,101 @@
-import { Shield, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
   const navLinks = [
-    { name: 'Forside', path: '/' },
+    { name: 'Hjem', path: '/' },
     { name: 'Om oss', path: '/om-oss' },
-    { name: 'Medlemskap', path: '/medlemskap' },
+    { name: 'Heraldikk', path: '/artikler' },
     { name: 'Våpenbrevet', path: '/vaapenbrev' },
-    { name: 'Våpenrullen', path: '/vaapenrulle' },
-    { name: 'Kalender', path: '/arrangementer' },
-    { name: 'Artiklar', path: '/artikler' },
+    { name: 'Medlemmenes våpen', path: '/vaapenrulle' },
+    { name: 'Kontakt oss', path: '/medlemskap' },
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-heraldry-bg/95 backdrop-blur-md shadow-sm border-b border-heraldry-gold' : 'bg-heraldry-bg border-b border-heraldry-gold/30'}`}>
-      <div className="container mx-auto px-6 max-w-[1400px] flex justify-between items-center h-20">
-        <Link to="/" className="flex items-center gap-4 group flex-shrink-0">
-          <div className="w-10 h-14 bg-heraldry-red flex items-center justify-center border-2 border-heraldry-gold rounded-sm group-hover:bg-heraldry-red-dark transition-colors">
-            <Shield className="text-heraldry-gold w-6 h-6" />
+    <nav className="w-full relative z-50 flex flex-col items-center">
+      {/* Top half (White block centered) */}
+      <div className="w-full flex justify-center bg-transparent">
+        <div className="bg-white w-full max-w-[1200px] h-[100px] md:h-[130px] lg:h-[150px] flex justify-center items-center relative z-20">
+          
+          {/* Overlapping Logo */}
+          <div className="absolute left-4 md:left-8 lg:left-12 -bottom-[25px] md:-bottom-[30px] lg:-bottom-[40px] z-30 w-[90px] h-[90px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px]">
+            <Link to="/">
+              <img 
+                src="/NHF_Logo_Segl.png" 
+                alt="Norsk Heraldisk Forening Logo" 
+                className="w-full h-full object-contain drop-shadow-md"
+              />
+            </Link>
           </div>
-          <div className="flex flex-col">
-            <span className={`font-bold text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] uppercase text-heraldry-blue`}>
-              NHF
-            </span>
-            <span className="text-[9px] uppercase tracking-[0.2em] opacity-60 font-sans hidden sm:block">
-              Stiftet 1969
-            </span>
-          </div>
-        </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-[10px] xl:text-xs font-sans uppercase tracking-widest font-medium">
-          {navLinks.map((link) => (
-             <Link 
-               key={link.path} 
-               to={link.path}
-               className={`border-b pb-1 transition-all ${location.pathname === link.path ? 'text-heraldry-red border-heraldry-red' : 'text-heraldry-blue border-transparent hover:text-heraldry-red hover:border-heraldry-gold'}`}
-             >
-               {link.name}
-             </Link>
-          ))}
-          <Link 
-            to="/login"
-            className="ml-4 px-4 py-2 border border-heraldry-gold text-heraldry-blue hover:bg-heraldry-red hover:text-white hover:border-heraldry-red transition-colors flex items-center gap-2"
-          >
-            {user ? `Min Side (${user.role})` : 'Logg Inn'}
+          <Link to="/" className="flex items-center justify-center h-full py-4">
+            <img 
+              src="/NHF_Logo_tekst.png" 
+              alt="Norsk Heraldisk Forening" 
+              className="h-[5vw] md:h-12 lg:h-16 object-contain"
+            />
           </Link>
         </div>
-        
+      </div>
+      
+      {/* Bottom half (Black) */}
+      <div className="bg-black w-full h-[50px] md:h-[60px] flex items-center justify-center shadow-lg relative z-10">
         {/* Mobile menu toggle */}
-        <div className="lg:hidden">
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-heraldry-blue p-2 cursor-pointer">
+        <div className="lg:hidden absolute right-4">
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white p-2 cursor-pointer">
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
+        </div>
+
+        {/* Desktop Nav Links */}
+        <div className="hidden lg:flex w-full container mx-auto px-6 h-full items-center justify-center">
+          <div className="flex items-center gap-6 lg:gap-10 xl:gap-14 text-sm lg:text-base font-serif text-white font-medium">
+            {navLinks.map((link) => (
+               <Link 
+                 key={link.path} 
+                 to={link.path}
+                 className={`transition-colors hover:text-heraldry-gold ${location.pathname === link.path ? 'text-heraldry-gold' : 'text-white'}`}
+               >
+                 {link.name}
+               </Link>
+            ))}
+            {user && (
+              <Link 
+                to="/login"
+                className="transition-colors hover:text-heraldry-gold text-white"
+              >
+                Min Side
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Mobile nav */}
       {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-20 left-0 right-0 bg-heraldry-bg border-b border-heraldry-gold shadow-xl p-6 flex flex-col gap-6 text-sm font-sans uppercase tracking-widest font-bold">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-black border-t border-gray-800 shadow-xl p-6 flex flex-col gap-6 text-base font-serif text-white font-medium z-50">
            {navLinks.map((link) => (
              <Link 
                key={link.path} 
                to={link.path}
-               className={`${location.pathname === link.path ? 'text-heraldry-red' : 'text-heraldry-blue'}`}
+               className={`hover:text-heraldry-gold transition-colors ${location.pathname === link.path ? 'text-heraldry-gold' : 'text-white'}`}
              >
                {link.name}
              </Link>
           ))}
           <Link 
             to="/login"
-            className="mt-4 pt-4 border-t border-heraldry-gold/30 text-heraldry-red"
+            className="pt-4 border-t border-gray-800 hover:text-heraldry-gold transition-colors text-white"
           >
             {user ? 'Min Side' : 'Logg Inn'}
           </Link>

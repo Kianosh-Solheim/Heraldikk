@@ -8,7 +8,7 @@ export default function Vaapenbrev() {
   
   if (!user || user.role === 'visitor') {
     return (
-      <div className="pt-24 min-h-[70vh] bg-heraldry-bg flex items-center justify-center">
+      <div className="pt-8 min-h-[70vh] bg-heraldry-bg flex items-center justify-center">
         <div className="text-center bg-white p-12 border border-heraldry-gold/30 shadow-lg max-w-md">
            <h2 className="text-2xl font-serif text-heraldry-blue mb-4 italic">Våpenbrevet</h2>
            <p className="text-sm font-sans mb-8 opacity-80">Du må vere logga inn som medlem for å lese Våpenbrevet.</p>
@@ -19,7 +19,7 @@ export default function Vaapenbrev() {
   }
 
   return (
-    <div className="pt-24 min-h-screen bg-heraldry-bg">
+    <div className="pt-8 min-h-screen bg-heraldry-bg">
       <div className="container mx-auto px-6 max-w-5xl py-12">
         <div className="mb-12">
           <span className="text-heraldry-red font-sans text-xs uppercase tracking-[0.3em] font-semibold block mb-2">Medlemsbladet</span>

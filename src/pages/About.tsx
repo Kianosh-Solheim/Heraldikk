@@ -22,7 +22,7 @@ export default function About() {
   ];
 
   return (
-    <div className="pt-24 min-h-screen bg-heraldry-bg">
+    <div className="pt-8 min-h-screen bg-heraldry-bg">
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16">

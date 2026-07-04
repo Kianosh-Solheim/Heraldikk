@@ -27,7 +27,7 @@ import ImagePickerDialog from './ImagePickerDialog';
 // --- Custom Nodes and Helpers ---
 
 const EditorContext = React.createContext<{
-    openImagePicker: (callback: (url: string) => void) => void;
+    openImagePicker: (callback: (url: string, title?: string, sourceUrl?: string) => void) => void;
 } | null>(null);
 
 const FootnoteReference = Node.create({
@@ -511,7 +511,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
     const [footnotes, setFootnotes] = useState<Footnote[]>([]);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const fullscreenWrapperRef = useRef<HTMLDivElement>(null);
-    const [pendingImageCallback, setPendingImageCallback] = useState<((url: string) => void) | null>(null);
+    const [pendingImageCallback, setPendingImageCallback] = useState<((url: string, title?: string, sourceUrl?: string) => void) | null>(null);
     const footnotesRef = useRef<Footnote[]>([]);
     const lastEmittedValue = useRef<string | null>(null);
     const isInitialMount = useRef(true);
@@ -697,12 +697,23 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         queueMicrotask(() => reconcileAndTriggerChange());
     }, [editor, value, handleUpdate, reconcileAndTriggerChange]);
 
-    const handleFileSelect = (url: string) => {
+    const handleFileSelect = (url: string, title?: string, sourceUrl?: string) => {
         if (pendingImageCallback) {
-            pendingImageCallback(url);
+            pendingImageCallback(url, title, sourceUrl);
             setPendingImageCallback(null);
         } else if (editor) {
-            editor.chain().focus().insertContent({ type: 'customImage', attrs: { src: url } }).run();
+            if (title && sourceUrl) {
+                const cleanTitle = title.replace(/^File:/, '').replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
+                editor.chain().focus().insertContent({ 
+                    type: 'customImage', 
+                    attrs: { 
+                        src: url, 
+                        caption: `Bilde: ${cleanTitle} fra Wikimedia Commons (${sourceUrl})`
+                    } 
+                }).run();
+            } else {
+                editor.chain().focus().insertContent({ type: 'customImage', attrs: { src: url } }).run();
+            }
         }
         setIsImagePickerOpen(false);
     };

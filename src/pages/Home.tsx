@@ -10,7 +10,7 @@ export default function Home() {
   const upcomingEvents = events.slice(0, 2);
 
   return (
-    <div className="flex-1 flex flex-col pt-24 min-h-[calc(100vh-6rem)]">
+    <div className="flex-1 flex flex-col pt-8 min-h-[calc(100vh-6rem)]">
       <section className="flex-1 grid grid-cols-1 md:grid-cols-12 max-w-7xl mx-auto w-full px-6 gap-8 pb-12">
         <div className="col-span-1 md:col-span-8 flex flex-col justify-center py-12">
           <motion.div

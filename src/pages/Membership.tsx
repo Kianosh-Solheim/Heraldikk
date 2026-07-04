@@ -6,7 +6,7 @@ export default function Membership() {
   const { user } = useAuth();
   
   return (
-    <div className="pt-24 min-h-screen bg-heraldry-blue text-heraldry-bg relative overflow-hidden">
+    <div className="pt-8 min-h-screen bg-heraldry-blue text-heraldry-bg relative overflow-hidden">
       <div className="absolute top-0 right-0 opacity-10 w-[600px] h-[600px] border border-heraldry-gold rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none" />
       <div className="absolute bottom-0 left-0 opacity-10 w-[400px] h-[400px] bg-heraldry-red rounded-full -translate-x-1/2 translate-y-1/2 blur-3xl pointer-events-none" />
 

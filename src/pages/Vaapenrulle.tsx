@@ -22,7 +22,7 @@ export default function Vaapenrulle() {
   const displayedArms = user?.role === 'admin' ? arms : arms.filter(a => a.status === 'approved');
 
   return (
-    <div className="pt-24 min-h-screen bg-heraldry-bg">
+    <div className="pt-8 min-h-screen bg-heraldry-bg">
       <div className="container mx-auto px-6 max-w-6xl py-12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
           <div>
