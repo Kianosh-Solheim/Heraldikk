@@ -2,8 +2,6 @@ import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import logoSegl from '../assets/NHF_Logo_Segl.png';
-import logoTekst from '../assets/NHF_Logo_tekst.png';
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +31,7 @@ export function Navbar() {
           <div className="absolute left-8 lg:left-12 -bottom-[30px] lg:-bottom-[40px] z-30 w-[120px] h-[120px] lg:w-[150px] lg:h-[150px]">
             <Link to="/">
               <img 
-                src={logoSegl}
+                src={`${import.meta.env.BASE_URL}NHF_Logo_Segl.png`}
                 alt="Norsk Heraldisk Forening Logo" 
                 className="w-full h-full object-contain drop-shadow-md"
               />
@@ -43,7 +41,7 @@ export function Navbar() {
           <Link to="/" className="flex items-center justify-center h-full py-4">
             {/* Image text for desktop */}
             <img 
-              src={logoTekst}
+              src={`${import.meta.env.BASE_URL}NHF_Logo_tekst.png`}
               alt="Norsk Heraldisk Forening" 
               className="h-10 lg:h-12 xl:h-16 object-contain"
             />
